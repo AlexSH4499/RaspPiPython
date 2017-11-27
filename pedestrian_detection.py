@@ -10,7 +10,13 @@ import numpy as np
     https://www.pyimagesearch.com/2015/11/09/pedestrian-detection-opencv/'''
 
 def pedestrian_detection():
-    #initialize the HOG descriptor
+
+    #arg parser
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-i", "--images", required = True, help="path to images directory")
+    args = vars(ap.parse_args())
+    
+    #initialize the HOG(Histogram of Oriented Gradients) descriptor
     hog = cv2.HOGDescriptor()
     hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
@@ -25,8 +31,7 @@ def pedestrian_detection():
         orig = image.copy()
 
         #detection!
-        (rects, weights) = hog.detectMultiscale(image, winStride=(4,4),\
-                                                padding = (8,8), scale=1.05)
+        (rects, weights) = hog.detectMultiScale(image, winStride=(4,4),padding = (8,8), scale=1.05)
 
         #draw original bounding boxes
         for(x,y,w,h) in rects:
@@ -43,8 +48,10 @@ def pedestrian_detection():
         print("[INFO] {}: {} original boxes,{}after suppression".format(\
             filename,len(rects),len(pick)))
 
+        #NMS- Non Maxima Suppression
         cv2.imshow("Before NMS", orig)
         cv2.imshow("After NMS", image)
         cv2.waitKey(0)
         
-    
+if __name__ == "__main__":
+    pedestrian_detection()
